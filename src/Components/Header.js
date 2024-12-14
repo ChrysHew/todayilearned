@@ -1,5 +1,5 @@
-function Header({ showForm, setShowForm }) {
-  const appTitle = "Today I Learned";
+function Header({ showForm, setShowForm, showSidebar, setShowSidebar }) {
+  const appTitle = "TeamVision";
   return (
     <>
       <header className="header">
@@ -21,6 +21,19 @@ function Header({ showForm, setShowForm }) {
         >
           {showForm ? "Close" : "Share a fact"}
         </button>
+        <div>
+          <button
+            className="user-photo-btn"
+            onClick={() => setShowSidebar((show) => !show)}
+          >
+            <img
+              src="ulogo.png"
+              height="68"
+              width="68"
+              alt="Today I Learned Logo"
+            />
+          </button>
+        </div>
       </header>
     </>
   );
