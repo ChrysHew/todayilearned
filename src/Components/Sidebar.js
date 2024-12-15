@@ -19,10 +19,10 @@ function Sidebar({ showSidebar, setShowSidebar }) {
         id="sidebar1"
         className="sidebar"
         aria-label="Main sidebar containing navigation links and some information"
-        aria-hidden="true"
+        aria-hidden={showSidebar ? "false" : "true"}
       >
         <button
-          className="sidebar__content"
+          className="btn-sidebar"
           onClick={() => setShowSidebar((show) => !show)}
         >
           <span>X</span>

@@ -108,7 +108,11 @@ function App() {
         )}
       </main>
       {/*SIDEBAR*/}
-      <aside>{showSidebar ? <Sidebar /> : null}</aside>
+      <aside>
+        {showSidebar ? (
+          <Sidebar showSidebar={showSidebar} setShowSidebar={setShowSidebar} />
+        ) : null}
+      </aside>
     </>
   );
 }

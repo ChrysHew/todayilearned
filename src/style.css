@@ -89,19 +89,21 @@ body {
   right: 0;
   min-width: 300px;
 }
-.sidebar__content {
+.btn-sidebar {
   padding: 8px;
+  border: none;
+  cursor: pointer;
 }
+
 /* SIDEBAR HIDDEN STATE */
-.sidebar[aria-hidden="false"] {
-  transition: 200ms;
-  transform: translateX(100%);
+.sidebar[aria-hidden="true"] {
+  transition: transform 200ms ease-in-out; /* Smooth animation */
+  transform: translateX(100%); /* Hidden */
 }
 /* SIDEBAR VISIBLE STATE */
-.sidebar:not([aria-hidden]),
 .sidebar[aria-hidden="false"] {
-  transition: 200ms;
-  transform: translateX(0);
+  transition: transform 200ms ease-in-out; /* Smooth animation */
+  transform: translateX(0); /* Visible */
 }
 
 @media (max-width: 900px) {
