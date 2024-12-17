@@ -1,5 +1,6 @@
 import { useState } from "react";
 import supabase from "../supabase";
+import ProfileContent from "./ProfileContent";
 
 function Sidebar({ showSidebar, setShowSidebar }) {
   function isValidURL(string) {
@@ -27,6 +28,8 @@ function Sidebar({ showSidebar, setShowSidebar }) {
         >
           <span>X</span>
         </button>
+
+        <ProfileContent />
       </div>
     </>
   );
