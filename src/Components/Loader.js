@@ -1,8 +1,8 @@
 function Loader() {
   return (
-    <div class="system-message center">
+    <div className="system-message center">
       <p>Loading...</p>
-      <div class="loader"></div>
+      <div className="loader"></div>
     </div>
   );
 }

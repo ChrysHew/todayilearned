@@ -6,6 +6,7 @@ import "./style.css";
 import { useEffect, useState } from "react";
 import supabase from "./supabase";
 import Loader from "./Components/Loader";
+import Sidebar from "./Components/Sidebar";
 
 const CATEGORIES = [
   { name: "technology", color: "#3b82f6" },
@@ -57,6 +58,7 @@ function App() {
   const [facts, setFacts] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [currentCategory, setCurrentCategory] = useState("all");
+  const [showSidebar, setShowSidebar] = useState(false);
 
   useEffect(
     function () {
@@ -84,10 +86,16 @@ function App() {
   return (
     <>
       {/* HEADER */}
-      <Header showForm={showForm} setShowForm={setShowForm} />
+      <Header
+        showForm={showForm}
+        setShowForm={setShowForm}
+        showSidebar={showSidebar}
+        setShowSidebar={setShowSidebar}
+      />
       {showForm ? (
         <NewFactForm setFacts={setFacts} CATEGORIES={CATEGORIES} />
       ) : null}
+      {/* MAIN */}
       <main className="main">
         <CategoryFilter
           setCurrentCategory={setCurrentCategory}
@@ -99,6 +107,12 @@ function App() {
           <FactList facts={facts} setFacts={setFacts} CATEGORIES={CATEGORIES} />
         )}
       </main>
+      {/*SIDEBAR*/}
+      <aside>
+        {showSidebar ? (
+          <Sidebar showSidebar={showSidebar} setShowSidebar={setShowSidebar} />
+        ) : null}
+      </aside>
     </>
   );
 }
