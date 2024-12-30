@@ -73,6 +73,15 @@ body {
   background-color: inherit;
 }
 
+.user-photo-btn img:hover {
+  padding: 2px;
+  border: solid;
+  border-width: 2px;
+  border-radius: 100%;
+  border-color: var(--source-link-color);
+  opacity: 90%;
+}
+
 .main {
   display: grid;
   grid-template-columns: 250px 1fr;
@@ -91,18 +100,18 @@ body {
 }
 .btn-sidebar {
   margin-left: 8px;
-  color: var(--btn-bg-color);
+  color: var(--source-link-color);
   margin-top: 10px;
   cursor: pointer;
   background: transparent;
   border: solid;
-  border-color: var(--btn-bg-color);
+  border-color: var(--source-link-color);
   border-width: 1px;
   padding: 7px 10px 7px 10px;
   border-radius: 100%;
 }
 .btn-sidebar:hover {
-  background: var(--btn-bg-color);
+  background: var(--source-link-color);
   color: var(--dark-base);
 }
 
