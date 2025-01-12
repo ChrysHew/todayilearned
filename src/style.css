@@ -73,6 +73,15 @@ body {
   background-color: inherit;
 }
 
+.user-photo-btn img:hover {
+  padding: 2px;
+  border: solid;
+  border-width: 2px;
+  border-radius: 100%;
+  border-color: var(--source-link-color);
+  opacity: 90%;
+}
+
 .main {
   display: grid;
   grid-template-columns: 250px 1fr;
@@ -88,33 +97,55 @@ body {
   top: 0;
   right: 0;
   min-width: 300px;
+  animation-duration: 0.3s;
+  animation-timing-function: ease-in-out;
+  animation-fill-mode: forwards; /* Ensure the final state is preserved */
 }
+
+/* SIDEBAR VISIBLE STATE */
+.sidebar.show {
+  animation-name: slideIn; /* Trigger the slideIn animation */
+}
+
+/* Keyframe animation to slide the sidebar in */
+@keyframes slideIn {
+  0% {
+    transform: translateX(100%); /* Start off-screen */
+  }
+  100% {
+    transform: translateX(0); /* End at normal position */
+  }
+}
+
+@keyframes slideOut {
+  0% {
+    transform: translateX(0); /* Start at normal position */
+  }
+  100% {
+    transform: translateX(100%); /* End off-screen */
+  }
+}
+
+/* SIDEBAR HIDDEN STATE (Slide-Out) */
+.sidebar.hide {
+  transform: translateX(100%); /* Slide out by default with transition */
+}
+
 .btn-sidebar {
   margin-left: 8px;
-  color: var(--btn-bg-color);
+  color: var(--source-link-color);
   margin-top: 10px;
   cursor: pointer;
   background: transparent;
   border: solid;
-  border-color: var(--btn-bg-color);
+  border-color: var(--source-link-color);
   border-width: 1px;
   padding: 7px 10px 7px 10px;
   border-radius: 100%;
 }
 .btn-sidebar:hover {
-  background: var(--btn-bg-color);
+  background: var(--source-link-color);
   color: var(--dark-base);
-}
-
-/* SIDEBAR HIDDEN STATE */
-.sidebar[aria-hidden="true"] {
-  transition: transform 200ms ease-in-out; /* Smooth animation */
-  transform: translateX(100%); /* Hidden */
-}
-/* SIDEBAR VISIBLE STATE */
-.sidebar[aria-hidden="false"] {
-  transition: transform 200ms ease-in-out; /* Smooth animation */
-  transform: translateX(0); /* Visible */
 }
 
 .profile-content-container {

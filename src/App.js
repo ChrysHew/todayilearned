@@ -6,7 +6,7 @@ import "./style.css";
 import { useEffect, useState } from "react";
 import supabase from "./supabase";
 import Loader from "./Components/Loader";
-import Sidebar from "./Components/Sidebar";
+import Sidebar from "./Components/sidebar";
 
 const CATEGORIES = [
   { name: "technology", color: "#3b82f6" },
