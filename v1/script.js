@@ -51,26 +51,46 @@ const factsList = document.querySelector(".facts-list");
 // Create DOM elements: Render facts in list
 factsList.innerHTML = "";
 
+// Supabase Configuration
+// TODO: Update these with your new Supabase project credentials
+// Get these from: https://supabase.com/dashboard > Your Project > Settings > API
+const SUPABASE_URL = "YOUR_SUPABASE_PROJECT_URL"; // e.g., "https://xxxxx.supabase.co"
+const SUPABASE_ANON_KEY = "YOUR_SUPABASE_ANON_KEY"; // Your anon/public key
+
 // Load data from Supabase
 loadFacts();
 
 async function loadFacts() {
-  const res = await fetch(
-    "https://hwtkikrqvnsrrpkjrytv.supabase.co/rest/v1/facts",
-    {
-      headers: {
-        apikey:
-          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh3dGtpa3Jxdm5zcnJwa2pyeXR2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE2Njg3NTk3ODUsImV4cCI6MTk4NDMzNTc4NX0.l_PGJRds8Lmg17Pn7eqNwFqYWH4rST2gVlTeGCfKTjk",
-        authorization:
-          "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh3dGtpa3Jxdm5zcnJwa2pyeXR2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE2Njg3NTk3ODUsImV4cCI6MTk4NDMzNTc4NX0.l_PGJRds8Lmg17Pn7eqNwFqYWH4rST2gVlTeGCfKTjk",
-      },
-    }
-  );
-  const data = await res.json();
-  // console.log(data);
-  // const filteredData = data.filter((fact) => fact.category === "technology");
+  // Check if credentials are configured
+  if (SUPABASE_URL === "YOUR_SUPABASE_PROJECT_URL" || SUPABASE_ANON_KEY === "YOUR_SUPABASE_ANON_KEY") {
+    console.error("⚠️ Supabase credentials not configured. Please update SUPABASE_URL and SUPABASE_ANON_KEY in script.js");
+    return;
+  }
 
-  createFactsList(data);
+  try {
+    const res = await fetch(
+      `${SUPABASE_URL}/rest/v1/facts`,
+      {
+        headers: {
+          apikey: SUPABASE_ANON_KEY,
+          authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+        },
+      }
+    );
+    
+    if (!res.ok) {
+      throw new Error(`Failed to fetch facts: ${res.status} ${res.statusText}`);
+    }
+    
+    const data = await res.json();
+    // console.log(data);
+    // const filteredData = data.filter((fact) => fact.category === "technology");
+
+    createFactsList(data);
+  } catch (error) {
+    console.error("Error loading facts:", error);
+    alert("Failed to load facts. Please check your Supabase configuration and ensure the 'facts' table exists.");
+  }
 }
 
 function createFactsList(dataArray) {

@@ -1,8 +1,23 @@
 import { createClient } from "@supabase/supabase-js";
 
-const supabaseUrl = "https://vcwbqguhtaynngqyzeaz.supabase.co";
-const supabaseKey =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZjd2JxZ3VodGF5bm5ncXl6ZWF6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mjg3NTk3MDgsImV4cCI6MjA0NDMzNTcwOH0.gHXJUCu6b1xLI6VvDFmtrZ9vBdVXZUZJvqm-AHYP1uY";
-const supabase = createClient(supabaseUrl, supabaseKey);
+// Get Supabase credentials from environment variables
+// If not set, these will be undefined and you'll need to add them
+const supabaseUrl = process.env.REACT_APP_SUPABASE_URL || "YOUR_SUPABASE_PROJECT_URL";
+const supabaseKey = process.env.REACT_APP_SUPABASE_ANON_KEY || "YOUR_SUPABASE_ANON_KEY";
+
+if (!supabaseUrl || supabaseUrl === "YOUR_SUPABASE_PROJECT_URL" || 
+    !supabaseKey || supabaseKey === "YOUR_SUPABASE_ANON_KEY") {
+  console.error("⚠️ Supabase credentials not configured. Please check your .env file.");
+  console.error("Current URL:", supabaseUrl);
+  console.error("Current Key:", supabaseKey ? "Set (length: " + supabaseKey.length + ")" : "Not set");
+} else {
+  console.log("✅ Supabase connected to:", supabaseUrl);
+}
+
+const supabase = createClient(supabaseUrl, supabaseKey, {
+  auth: {
+    autoRefreshToken: false,
+  },
+});
 
 export default supabase;
