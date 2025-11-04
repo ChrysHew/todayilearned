@@ -7,16 +7,54 @@ function Fact({ fact, setFacts, CATEGORIES }) {
 
   async function handleVote(voteType) {
     setIsUpdating(true);
+    
+    // Handle null values - if vote is null, start at 0, otherwise increment
+    const currentValue = fact[voteType] ?? 0;
+    const newValue = currentValue + 1;
+    
+    console.log(`Updating ${voteType}:`, {
+      currentValue,
+      newValue,
+      factId: fact.id
+    });
+    
     const { data: updatedFact, error } = await supabase
       .from("facts")
-      .update({ [voteType]: fact[voteType] + 1 })
+      .update({ [voteType]: newValue })
       .eq("id", fact.id)
       .select();
 
-    if (!error) {
-      setFacts((facts) =>
-        facts.map((f) => (f.id === fact.id ? updatedFact[0] : f))
-      );
+    if (error) {
+      console.error("❌ Error updating vote:", error);
+      console.error("Error details:", {
+        message: error.message,
+        details: error.details,
+        hint: error.hint,
+        code: error.code
+      });
+      alert(`Failed to update vote: ${error.message}`);
+      setIsUpdating(false);
+    } else {
+      // Update succeeded (error is null), even if select() didn't return data
+      // Update the UI optimistically with the new value
+      if (updatedFact && updatedFact.length > 0) {
+        console.log("✅ Vote updated successfully:", voteType, updatedFact[0]);
+        console.log(`Updated ${voteType} from ${currentValue} to ${updatedFact[0][voteType]}`);
+        setFacts((facts) =>
+          facts.map((f) => (f.id === fact.id ? updatedFact[0] : f))
+        );
+      } else {
+        // Select didn't return data, but update succeeded - update UI optimistically
+        console.log("✅ Vote update succeeded, updating UI optimistically");
+        console.log(`Updated ${voteType} from ${currentValue} to ${newValue}`);
+        setFacts((facts) =>
+          facts.map((f) => 
+            f.id === fact.id 
+              ? { ...f, [voteType]: newValue }
+              : f
+          )
+        );
+      }
       setIsUpdating(false);
     }
   }
@@ -50,19 +88,19 @@ function Fact({ fact, setFacts, CATEGORIES }) {
             onClick={() => handleVote("votesInteresting")}
             disabled={isUpdating}
           >
-            👍 {fact.votesInteresting}
+            👍 {fact.votesInteresting ?? 0}
           </button>
           <button
             onClick={() => handleVote("votesMindblowing")}
             disabled={isUpdating}
           >
-            🤯 {fact.votesMindblowing}
+            🤯 {fact.votesMindblowing ?? 0}
           </button>
           <button
             onClick={() => handleVote("votesFalse")}
             disabled={isUpdating}
           >
-            ⛔️ {fact.votesFalse}
+            ⛔️ {fact.votesFalse ?? 0}
           </button>
         </div>
       </li>

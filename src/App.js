@@ -7,6 +7,8 @@ import { useEffect, useState } from "react";
 import supabase from "./supabase";
 import Loader from "./Components/Loader";
 import Sidebar from "./Components/sidebar";
+import { getCurrentUser, signOut } from "./Services/auth";
+//import { uSeAuth } from "./Services/useAuth";
 
 const CATEGORIES = [
   { name: "technology", color: "#3b82f6" },
@@ -59,11 +61,31 @@ function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [currentCategory, setCurrentCategory] = useState("all");
   const [showSidebar, setShowSidebar] = useState(false);
+  const [user, setUser] = useState(false);
+
+  // useEffect(() => {
+  //   const { user } = useAuth();
+  //   const fetchUser = async () => {
+  //     const loggedInUser = await getCurrentUser();
+  //     setUser(loggedInUser);
+  //   };
+  //   fetchUser();
+  // }, []);
+
+  const handleLogout = async () => {
+    await signOut();
+    //setUser(null); // Reset user state on logout
+    console.log("Logged out");
+  };
 
   useEffect(
     function () {
       async function getFacts() {
         setIsLoading(true);
+
+        // Test connection first
+        console.log("Attempting to connect to Supabase...");
+        console.log("Supabase URL:", process.env.REACT_APP_SUPABASE_URL);
 
         let query = supabase.from("facts").select("*");
 
@@ -75,7 +97,25 @@ function App() {
           .order("votesInteresting", { ascending: false })
           .limit(1000);
 
-        !error ? setFacts(facts) : alert("There was a problem getting data");
+        if (error) {
+          console.error("❌ Error fetching facts:", error);
+          console.error("Error details:", {
+            message: error.message,
+            details: error.details,
+            hint: error.hint,
+            code: error.code
+          });
+          alert(`There was a problem getting data: ${error.message}\n\nCheck the browser console for more details.`);
+          setFacts([]);
+        } else {
+          console.log("✅ Facts loaded successfully:", facts?.length || 0, "facts");
+          if (facts && facts.length > 0) {
+            console.log("Sample fact:", facts[0]);
+          } else {
+            console.warn("⚠️ No facts found. The table might be empty or RLS policies are blocking access.");
+          }
+          setFacts(facts || []);
+        }
         setIsLoading(false);
       }
       getFacts();
@@ -110,7 +150,13 @@ function App() {
       {/*SIDEBAR*/}
       <aside>
         {showSidebar ? (
-          <Sidebar showSidebar={showSidebar} setShowSidebar={setShowSidebar} />
+          <Sidebar
+            showSidebar={showSidebar}
+            setShowSidebar={setShowSidebar}
+            user={user} // pass user state
+            setUser={setUser} // pass setUser so sign up can update it
+            handleLogout={handleLogout} // if needed in profile
+          />
         ) : null}
       </aside>
     </>
