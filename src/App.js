@@ -6,7 +6,7 @@ import "./style.css";
 import { useEffect, useState } from "react";
 import supabase from "./supabase";
 import Loader from "./Components/Loader";
-import Sidebar from "./Components/sidebar";
+import Sidebar from "./Components/Sidebar";
 import { getCurrentUser, signOut } from "./Services/auth";
 //import { uSeAuth } from "./Services/useAuth";
 
@@ -61,7 +61,7 @@ function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [currentCategory, setCurrentCategory] = useState("all");
   const [showSidebar, setShowSidebar] = useState(false);
-  const [user, setUser] = useState(false);
+  const [user, setUser] = useState(null);
 
   // useEffect(() => {
   //   const { user } = useAuth();
@@ -74,7 +74,7 @@ function App() {
 
   const handleLogout = async () => {
     await signOut();
-    //setUser(null); // Reset user state on logout
+    setUser(null); // Reset user state on logout
     console.log("Logged out");
   };
 

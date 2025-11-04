@@ -1,4 +1,3 @@
-import React, { useState, useEffect, createContext, useContext } from "react";
 import supabase from "../supabase";
 
 // Sign in function
@@ -9,7 +8,8 @@ export async function signInWithEmail(email, password) {
   });
   if (error) {
     console.error("Login Error:", error.message);
-    return null;
+    // Throw error so it can be caught and displayed to user
+    throw new Error(error.message);
   }
   return data.user; // Return the logged-in user
 }
@@ -17,30 +17,29 @@ export async function signInWithEmail(email, password) {
 // Sign up function
 export async function signUpWithEmail(username, email, password) {
   // Step 1: Sign up with email and password
-  const { data, error } = await supabase.auth.signUp({ email, password });
+  const { data, error } = await supabase.auth.signUp({
+    email,
+    password,
+    options: {
+      data: {
+        display_name: username, // This will be stored immediately in user_metadata
+      },
+    },
+  });
 
+  // If there's an error, throw it so it can be caught and displayed
   if (error) {
-    console.error("Sign Up Error:", email, password, error.message);
-    return null;
+    console.error("Sign Up Error:", email, error.message);
+    // Throw error with message so it can be caught and displayed to user
+    throw new Error(error.message);
   }
 
-  // Step 2: Add username to user profile after successful sign-up
   const { user } = data;
-
-  const { error: profileError } = await supabase
-    .from("users") // Assuming you have a profiles table to store user details
-    .insert({
-      id: user.id, // Use the user's ID from Supabase authentication
-      //email: user.email,
-      //created_at: new Date().toISOString(),
-      display_name: username, // Add the username to the profile table
-    });
-
-  if (profileError) {
-    console.error("Profile Error:", profileError.message);
-    return null;
+  if (!user) {
+    throw new Error("Sign up failed. No user was created.");
   }
 
+  console.log("Sign up successful:", user.email);
   return user; // Return the newly created user with the username
 }
 

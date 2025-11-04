@@ -1,14 +1,15 @@
 import { useState } from "react";
 import supabase from "../supabase";
 
-function ProfileContent() {
+function ProfileContent({ user, handleLogout }) {
   let disputedPosts = 0;
   let totalPosts = 0;
   let votesInterestingCount = 0;
   let votesMindblowingCount = 0;
   let votesFalseCount = 0;
-  let userName = "John Doe";
-  let userDescription = "A guest user";
+  // Use actual user data if available
+  let userName = user?.user_metadata?.display_name || user?.email || "John Doe";
+  let userDescription = user ? "Logged in user" : "A guest user";
 
   return (
     <>
@@ -63,6 +64,26 @@ function ProfileContent() {
             <div className="statNumber">{disputedPosts}</div>
             <div className="statTitle-alt">Disputed Posts</div>
           </div>
+        </div>
+        <div className="logout-section" style={{ marginTop: "20px", padding: "20px" }}>
+          <button
+            onClick={handleLogout}
+            style={{
+              width: "100%",
+              padding: "12px",
+              backgroundColor: "#ef4444",
+              color: "white",
+              border: "none",
+              borderRadius: "8px",
+              cursor: "pointer",
+              fontSize: "16px",
+              fontWeight: "600"
+            }}
+            onMouseOver={(e) => e.target.style.backgroundColor = "#dc2626"}
+            onMouseOut={(e) => e.target.style.backgroundColor = "#ef4444"}
+          >
+            Logout
+          </button>
         </div>
       </div>
     </>
