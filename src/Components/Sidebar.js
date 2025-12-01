@@ -1,9 +1,10 @@
-import { useState } from "react";
+import React from "react";
+import { useEffect } from "react";
 import supabase from "../supabase";
 import ProfileContent from "./ProfileContent";
 import SignUp from "../Pages/signUp";
 
-function Sidebar({ showSidebar, setShowSidebar }) {
+function Sidebar({ showSidebar, setShowSidebar, user, setUser, handleLogout }) {
   return (
     <>
       <div
@@ -18,7 +19,11 @@ function Sidebar({ showSidebar, setShowSidebar }) {
           <span>X</span>
         </button>
 
-        <SignUp />
+        {user ? (
+          <ProfileContent user={user} handleLogout={handleLogout} />
+        ) : (
+          <SignUp user={user} setUser={setUser} />
+        )}
       </div>
     </>
   );
