@@ -31,7 +31,13 @@ function NewFactForm({ setFacts, CATEGORIES }) {
       alert("Please enter a source URL.");
       return;
     }
-    if (!isValidURL(source)) {
+    // Normalize source URL
+    let targetSource = source;
+    if (!targetSource.match(/^https?:\/\//)) {
+      targetSource = "https://" + targetSource;
+    }
+
+    if (!isValidURL(targetSource)) {
       alert("Please enter a valid URL for the source (e.g., https://example.com).");
       return;
     }
@@ -44,16 +50,16 @@ function NewFactForm({ setFacts, CATEGORIES }) {
       return;
     }
 
-    console.log("Attempting to insert fact:", { text, source, category });
+    console.log("Attempting to insert fact:", { text, source: targetSource, category });
 
     setIsUploading(true);
     // If createdIn is a date column, use current date; if integer, use year
     // Using current date in ISO format (YYYY-MM-DD) which works for date columns
     const currentDate = new Date().toISOString().split('T')[0];
-    
+
     const factData = {
       text,
-      source,
+      source: targetSource,
       category,
       votesInteresting: 0,
       votesMindblowing: 0,
@@ -61,7 +67,7 @@ function NewFactForm({ setFacts, CATEGORIES }) {
       createdIn: currentDate, // Format: "2025-01-XX" for date type columns
     };
     console.log("Inserting fact data:", factData);
-    
+
     const { data: newFact, error } = await supabase
       .from("facts")
       .insert([factData])
