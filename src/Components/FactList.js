@@ -1,7 +1,7 @@
 import { Fragment } from "react";
 import Fact from "./Fact";
 
-function FactList({ facts, setFacts, CATEGORIES }) {
+function FactList({ facts, setFacts, CATEGORIES, handleLoadMore, hasMore }) {
   if (facts.length < 1) {
     return (
       <p className="system-message">
@@ -25,6 +25,7 @@ function FactList({ facts, setFacts, CATEGORIES }) {
           ))}
         </ul>
         <p>There are {facts.length} facts in the database. Add your own!</p>
+        {hasMore && <button className="btn btn-large btn-all-categories" onClick={handleLoadMore}>Load More</button>}
       </section>
     </>
   );

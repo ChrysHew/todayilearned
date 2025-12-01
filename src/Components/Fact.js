@@ -7,17 +7,17 @@ function Fact({ fact, setFacts, CATEGORIES }) {
 
   async function handleVote(voteType) {
     setIsUpdating(true);
-    
-    // Handle null values - if vote is null, start at 0, otherwise increment
+
+    // default to 0 if null
     const currentValue = fact[voteType] ?? 0;
     const newValue = currentValue + 1;
-    
+
     console.log(`Updating ${voteType}:`, {
       currentValue,
       newValue,
       factId: fact.id
     });
-    
+
     const { data: updatedFact, error } = await supabase
       .from("facts")
       .update({ [voteType]: newValue })
@@ -35,8 +35,7 @@ function Fact({ fact, setFacts, CATEGORIES }) {
       alert(`Failed to update vote: ${error.message}`);
       setIsUpdating(false);
     } else {
-      // Update succeeded (error is null), even if select() didn't return data
-      // Update the UI optimistically with the new value
+      // update success, optimistic UI update
       if (updatedFact && updatedFact.length > 0) {
         console.log("✅ Vote updated successfully:", voteType, updatedFact[0]);
         console.log(`Updated ${voteType} from ${currentValue} to ${updatedFact[0][voteType]}`);
@@ -44,18 +43,43 @@ function Fact({ fact, setFacts, CATEGORIES }) {
           facts.map((f) => (f.id === fact.id ? updatedFact[0] : f))
         );
       } else {
-        // Select didn't return data, but update succeeded - update UI optimistically
+        // no data returned but update worked - optimistic update
         console.log("✅ Vote update succeeded, updating UI optimistically");
         console.log(`Updated ${voteType} from ${currentValue} to ${newValue}`);
         setFacts((facts) =>
-          facts.map((f) => 
-            f.id === fact.id 
+          facts.map((f) =>
+            f.id === fact.id
               ? { ...f, [voteType]: newValue }
               : f
           )
         );
       }
       setIsUpdating(false);
+    }
+  }
+
+  async function handleDelete() {
+    if (fact.id <= 11) {
+      alert(
+        "You can't delete the default facts. You can add your own to experiment with it."
+      );
+      return;
+    }
+
+    const isConfirmed = window.confirm(
+      "Are you sure you want to delete this fact?"
+    );
+    if (isConfirmed) {
+      setIsUpdating(true);
+      const { error } = await supabase.from("facts").delete().eq("id", fact.id);
+
+      if (error) {
+        alert("There was an error deleting the fact.");
+        setIsUpdating(false);
+      } else {
+        setFacts((facts) => facts.filter((f) => f.id !== fact.id));
+        setIsUpdating(false);
+      }
     }
   }
   return (
@@ -101,6 +125,9 @@ function Fact({ fact, setFacts, CATEGORIES }) {
             disabled={isUpdating}
           >
             ⛔️ {fact.votesFalse ?? 0}
+          </button>
+          <button onClick={handleDelete} disabled={isUpdating}>
+            🗑️
           </button>
         </div>
       </li>

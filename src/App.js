@@ -78,6 +78,10 @@ function App() {
     console.log("Logged out");
   };
 
+  const [page, setPage] = useState(0);
+  const [hasMore, setHasMore] = useState(true);
+  const FACTS_PER_PAGE = 50;
+
   useEffect(
     function () {
       async function getFacts() {
@@ -87,15 +91,18 @@ function App() {
         console.log("Attempting to connect to Supabase...");
         console.log("Supabase URL:", process.env.REACT_APP_SUPABASE_URL);
 
-        let query = supabase.from("facts").select("*");
+        let query = supabase.from("facts").select("*", { count: "exact" });
 
         if (currentCategory !== "all") {
           query = query.eq("category", currentCategory);
         }
 
-        let { data: facts, error } = await query
+        const from = page * FACTS_PER_PAGE;
+        const to = from + FACTS_PER_PAGE - 1;
+
+        let { data: newFacts, error, count } = await query
           .order("votesInteresting", { ascending: false })
-          .limit(1000);
+          .range(from, to);
 
         if (error) {
           console.error("❌ Error fetching facts:", error);
@@ -106,22 +113,41 @@ function App() {
             code: error.code
           });
           alert(`There was a problem getting data: ${error.message}\n\nCheck the browser console for more details.`);
-          setFacts([]);
+          // reset on first page load error
+          if (page === 0) setFacts([]);
         } else {
-          console.log("✅ Facts loaded successfully:", facts?.length || 0, "facts");
-          if (facts && facts.length > 0) {
-            console.log("Sample fact:", facts[0]);
+          console.log("✅ Facts loaded successfully:", newFacts?.length || 0, "facts");
+          if (newFacts && newFacts.length > 0) {
+            console.log("Sample fact:", newFacts[0]);
           } else {
             console.warn("⚠️ No facts found. The table might be empty or RLS policies are blocking access.");
           }
-          setFacts(facts || []);
+
+          setFacts((prevFacts) => {
+            // replace if first page (or category change), else append
+            return page === 0 ? newFacts : [...prevFacts, ...newFacts];
+          });
+
+          // check if more pages exist
+          if (count !== null) {
+            setHasMore((page + 1) * FACTS_PER_PAGE < count);
+          }
         }
         setIsLoading(false);
       }
       getFacts();
     },
-    [currentCategory]
+    [currentCategory, page]
   );
+
+  // Reset page when category changes
+  useEffect(() => {
+    setPage(0);
+  }, [currentCategory]);
+
+  function handleLoadMore() {
+    setPage((prev) => prev + 1);
+  }
 
   return (
     <>
@@ -144,7 +170,7 @@ function App() {
         {isLoading ? (
           <Loader />
         ) : (
-          <FactList facts={facts} setFacts={setFacts} CATEGORIES={CATEGORIES} />
+          <FactList facts={facts} setFacts={setFacts} CATEGORIES={CATEGORIES} handleLoadMore={handleLoadMore} hasMore={hasMore} />
         )}
       </main>
       {/*SIDEBAR*/}
